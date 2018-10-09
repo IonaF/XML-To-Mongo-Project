@@ -1,52 +1,72 @@
 package com.demo.airportapp.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.airportapp.model.Airport;
 import com.demo.airportapp.repositories.AptRepository;
-
-import java.util.List;
+import com.demo.airportapp.services.AptService;
+import com.demo.airportapp.services.dtos.RequestTO;
 
 @RestController
 @RequestMapping("/api/airports")
 public class AppController {
 
     @Autowired
+    AptService aptService;
+    
+    @Autowired
     AptRepository aptRepository;
-
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public List<Airport> getAllAirports() {
-    	return aptRepository.findAll();
-    }
-    private Pageable createPaginationPmtr(int pageNo, int pageSize) {
-    	return new PageRequest(pageNo, pageSize);
+    
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+    public ResponseEntity<?> getAllAirports(
+    		@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+    		@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    	RequestTO requestObj = new RequestTO();
+    	requestObj.setPageNumber((pageNumber == null)? 0 :pageNumber.intValue());
+    	requestObj.setPageSize((pageSize == null)? 10 : pageSize.intValue());
+		return new ResponseEntity<>(aptService.getAllAirports(requestObj), HttpStatus.OK);
     }
     
-    @RequestMapping(value="/code/{code}/pageNo/{pageNo}/pageSize/{pageSize}", method = RequestMethod.GET)
-    public Page<Airport> getAirportsByCode(@PathVariable("code") String code,
-    		@PathVariable("pageNo") int pageNo, @PathVariable("pageSize") int pageSize) {
-        return aptRepository.findByCodeLike(code, createPaginationPmtr(pageNo, pageSize));
+    @RequestMapping(value="/fetchby/code", method = RequestMethod.GET)
+    public ResponseEntity<?> getAirportsByCode(
+    		@RequestParam(value = "searchString", required = true) String searchString,
+    		@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+    		@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    	RequestTO requestObj = new RequestTO();
+    	requestObj.setSearchString(searchString);
+    	requestObj.setPageNumber((pageNumber == null)? 0 : pageNumber.intValue());
+    	requestObj.setPageSize((pageSize == null)? 10 : pageSize.intValue());
+		return new ResponseEntity<>(aptService.getAirportsByCode(requestObj), HttpStatus.OK);
     }
     
-    @RequestMapping(value="/name/{name}/pageNo/{pageNo}/pageSize/{pageSize}", method = RequestMethod.GET)
-    public Page<Airport> getAirportsByName(@PathVariable("name") String name,
-    		@PathVariable("pageNo") int pageNo, @PathVariable("pageSize") int pageSize) {
-        return aptRepository.findByNameLike(name, createPaginationPmtr(pageNo, pageSize));
-    }
-    
-    @RequestMapping(value="/deprecated/{deprecated}/pageNo/{pageNo}/pageSize/{pageSize}", method = RequestMethod.GET)
-    public Page<Airport> getAirportsByDeprecated(@PathVariable("deprecated") String deprecated,
-    		@PathVariable("pageNo") int pageNo, @PathVariable("pageSize") int pageSize) {
-        return aptRepository.findByDeprecated(deprecated, createPaginationPmtr(pageNo, pageSize));
+    @RequestMapping(value="/fetchby/name", method = RequestMethod.GET)
+    public ResponseEntity<?> getAirportsByName(
+    		@RequestParam(value = "searchString", required = true) String searchString,
+    		@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+    		@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    	RequestTO requestObj = new RequestTO();
+    	requestObj.setSearchString(searchString);
+    	requestObj.setPageNumber((pageNumber == null)? 0 : pageNumber.intValue());
+    	requestObj.setPageSize((pageSize == null)? 10 : pageSize.intValue());
+		return new ResponseEntity<>(aptService.getAirportsByName(requestObj), HttpStatus.OK);
     }
 	
-	
+    @RequestMapping(value="/fetchby/deprecated", method = RequestMethod.GET)
+    public ResponseEntity<?> getAirportsByDeprecated(
+    		@RequestParam(value = "searchString", required = true) String searchString,
+    		@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+    		@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+    	RequestTO requestObj = new RequestTO();
+    	requestObj.setSearchString(searchString);
+    	requestObj.setPageNumber((pageNumber == null)? 0 : pageNumber.intValue());
+    	requestObj.setPageSize((pageSize == null)? 10 : pageSize.intValue());
+		return new ResponseEntity<>(aptService.getAirportsByDeprecated(requestObj), HttpStatus.OK);
+    }
+    
+    
 }

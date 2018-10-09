@@ -19,7 +19,7 @@ public class AptConverter implements Converter {
   @Override
   public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
     Airport airport = new Airport();
-    airport.setCode(reader.getAttribute("Code"));
+    airport.setId(reader.getAttribute("Code"));
     airport.setName(reader.getAttribute("Name"));
     airport.setDeprecated(reader.getAttribute("Deprecated"));
     return airport;
